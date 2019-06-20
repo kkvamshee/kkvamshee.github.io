@@ -1,5 +1,7 @@
 * {
 	box-sizing: border-box;
+	font-family: sans-serif;
+	line-height: 145%;
 }
 
 html {
@@ -69,15 +71,25 @@ ul {
 #side-bar ul {
 	padding: 0;
 }
-#side-bar li{
+#languages li{
+	float: left;
 	list-style: none;
 	font-size: 1.25em;
 	border: 3px solid #2a3f59;
-	border-radius: 25%;
 	margin: 0.3em;
-	align-items: center;
-	float: left;
+	align-items: center;	
 	padding: 0.25em;
+	box-shadow: box-shadow: 3px 3px 10px #333;
+}
+#skills li {
+	list-style: none;
+	font-size: 1.25em;
+	padding: 0.4em;
+	margin: 0.3em;
+	float: left;
+	background-color: #2a3f59;
+	color: white;
+	border-radius: 18%;
 }
 #side-bar li.empty {
 	width: 0;
@@ -109,8 +121,6 @@ ul {
 .circle {
 	border-radius: 50%;
 	height: 9em;
-	margin-right: 16.67%;
-	margin-left: 16.67%;
 	border: 5px solid white;
 	box-shadow: 3px 3px 10px #333;
 }
@@ -163,6 +173,10 @@ div img {
 }
 
 @media (min-width: 992px) {
+	.circle{
+		margin-right: 16.67%;
+		margin-left: 16.67%;
+	}
 	.lg-1 {
 		width: 8.33%;
 	}
