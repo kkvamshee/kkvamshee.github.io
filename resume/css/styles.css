@@ -1,0 +1,105 @@
+html {
+	background-color: #eaeeff;
+}
+
+header,h1,h2,h3,h4{
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+}
+
+
+nav ul {
+	list-style: none;
+	background-color: #000b4f;
+	padding: 0;
+	margin: 0;
+}
+nav li {
+	float: left;
+}
+nav li a {
+	color: white;
+	text-decoration: none;
+	display: block;
+	font-size: 1.5em;
+	padding: 0.4em 1em 0.4em 1em;
+	border-right: 1px solid white;
+}
+nav li a:hover {
+	background-color: #111;
+}
+
+#introduction {
+	float: left;
+}
+
+#img-container {
+	float: left;
+}
+
+#main-content, #side-bar {
+	float: left;
+}
+
+.left-float {
+	float: left;
+}
+
+.right-float {
+	float: right;
+}
+
+.circle {
+	border-radius: 50%;
+	height: 9em;
+	padding-right: 16.67%;
+	padding-left: 16.67%;
+}
+
+div img {
+	align-content: center;
+}
+
+.gray-text {
+	color: #888;
+}
+
+.sm-1 {
+	width: 8.33%;
+}
+.sm-2 {
+	width: 16.67%;
+}
+.sm-3 {
+	width: 25%;
+}
+.sm-4 {
+	width: 33.33%;
+}
+.sm-5 {
+	width: 41.67%;
+}
+.sm-6 {
+	width: 50%;
+}
+.sm-7 {
+	width: 58.33%;
+}
+.sm-8 {
+	width: 66.67%;
+}
+.sm-9 {
+	width: 75%;
+}
+.sm-10 {
+	width: 83.33%;
+}
+.sm-11 {
+	width: 91.67%;
+}
+.sm-12 {
+	width: 100%;
+}
+
