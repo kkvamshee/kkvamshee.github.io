@@ -1,0 +1,9 @@
+/* .jumbotron {
+    background: #454d55
+} */
+
+.circle {
+    border-radius: 50%;
+    box-shadow: 3px 3px 10px #333;
+    height: 8em;
+}
