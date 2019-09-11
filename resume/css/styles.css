@@ -64,10 +64,10 @@ ul {
 	text-align: center;
 	color: #2a3f59;
 }
-#side-bar ul {
+ul {
 	padding: 0;
 }
-#languages li{
+.light li{
 	float: left;
 	list-style: none;
 	font-size: 1.25em;
@@ -78,7 +78,8 @@ ul {
 	border-radius: 2em;
 	box-shadow: 3px 3px 5px #999;
 }
-#skills li {
+.dark li {
+	float: left;
 	list-style: none;
 	font-size: 1.25em;
 	padding: 0.4em;
@@ -88,14 +89,6 @@ ul {
 	color: white;
 	border-radius: 2em;
 	box-shadow: 3px 3px 5px #999;
-}
-#side-bar li.empty {
-	width: 0;
-	height: 0;
-	border: 0;
-	padding: 0;
-	margin: 0;
-	clear: both;
 }
 
 .ud-container {
