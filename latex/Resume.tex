@@ -1,0 +1,180 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[2]{
+  \item\small{
+    \textbf{#1}{#2 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}\vspace{-4pt}}
+
+\renewcommand{\labelitemii}{$\circ$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  CV STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING-----------------
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+  \textbf{\href{}{\Large Kabeer Vamshee Krishna}} & Email : \href{mailto:kkvamshee@gmail.com}{kkvamshee@gmail.com}\\
+  {} & Mobile : +65 91747872 \\
+\end{tabular*}
+
+
+%-----------EDUCATION-----------------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Indian Institute of Technology Roorkee}{Roorkee, India}
+      {Bachelor of Technology in Civil Engineering}{Jul. 2015 -- May. 2019}
+  \resumeSubHeadingListEnd
+
+
+%-----------EXPERIENCE-----------------
+\section{Experience and Projects}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {Works Applications}{Singapore}
+      {Junior Software Engineer}{Oct 2019 - Present}
+      \resumeItemListStart
+        \resumeItem{}
+          {Worked on designing and developing UI Editor application to decrease the communication barrier between clients and consultants.}
+        \resumeItem{}
+          {Developed and maintained Angular Code Generator to embed design patterns into the code while also improving developer productivity.}
+        \resumeItem{}
+          {Utilise App dynamics to decrease latency in the product.}
+        \resumeItem{}
+          {Actively worked on converting JSON data to XLSX/Google Sheets with embedded macros to enhance readability.}
+        \resumeItem{}
+          {Facilitated in the documentation of customizing application UI from editing to deployment.}
+        \resumeItem{}
+          {Interacted regularly with managers, consultants to effectively map business requirements to technical requirements in a multicultural workspace.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Spookfish Innovations}{Bangalore, India}
+      {Intern}{May 2018 - Jul 2018}
+      \resumeItemListStart
+        \resumeItem{}
+          {Research and Development of a Human Pose Estimation Architecture.}
+        \resumeItem{}
+          {Integration of Pose Estimation model with Thermal imagery.}
+        \resumeItem{}
+          {Calibration of thermal camera with regular RGB camera.}
+        \resumeItem{}
+          {Development of Pose Comparison model.}
+        \resumeItem{}
+          {This software is now being used by cricket players in identifying the critical body parts while playing.}
+      \resumeItemListEnd
+    
+    \resumeSubheading
+      {Indian Institute of Technology}{Roorkee, India}
+      {Research}{Aug 2018 - May 2019}
+      \resumeItemListStart
+        \resumeItem{}
+          {Development of a self-driving motor robot for indoor environments.}
+        \resumeItem{}
+          {Kinect is used to obtain the depth image instead of LIDAR thereby reducing the cost of model by 50\%.}
+        \resumeItem{}
+          {Several 3D-mazes are built using Blender for optimization of mapping algorithm.}
+        \resumeItem{}
+          {Exploration algorithm is being developed to build the map of an unknown space.}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%--------PROGRAMMING SKILLS------------
+\section{Programming Skills}
+  \resumeSubHeadingListStart
+    \item{
+      \textbf{Frameworks \& Technologies : }{Spring, Angular, Node.js, Anaconda, Tensorflow, OpenCV, MySQL, Cassandra, Git}
+    }
+    \item{
+      \textbf{Languages : }{Java, Javascript, Typescript, Python, C/C++, SQL, HTML, CSS/LESS}
+    }
+    \item{
+      \textbf{Interests : }{Web Development, Machine Learning, Computer Vision, Data Analysis/Visualisation}
+    }
+  \resumeSubHeadingListEnd
+  
+\section{Awards}
+  \resumeSubHeadingListStart
+    \item{
+      {Secured 3rd Rank in The Young Optimization Crackerjack Contest conducted by IEOR @ IITB \& McKinsey Knowledge Centre India.}
+    }
+    \item{
+      {Ranked 4th in GSC-Brainwaves Hackathon by Societe Generale.}
+    }
+  \resumeSubHeadingListEnd
+
+\section{Languages}
+  \resumeSubHeadingListStart
+    \item{
+      {English, Hindi, Telugu}
+    }
+  \resumeSubHeadingListEnd
+
+%-------------------------------------------
+\end{document}
