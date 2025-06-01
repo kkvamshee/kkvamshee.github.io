@@ -47,26 +47,23 @@
   }
 }
 
-\newcommand{\resumeSubheading}[4]{
+\newcommand{\resumeSubItem}[2]{
   \vspace{-1pt}\item
     \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
       \textbf{#1} & #2 \\
-      \textit{\small#3} & \textit{\small #4} \\
-    \end{tabular*}\vspace{-5pt}
+    \end{tabular*}\vspace{2pt}
 }
 
-\newcommand{\resumeSubSubheading}[2]{
-    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
-      \textit{\small#1} & \textit{\small #2} \\
+\newcommand{\resumeSubSubItem}[2]{
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{\small #1} & \textit{\small #2} \\
     \end{tabular*}\vspace{-5pt}
 }
-
-\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}\vspace{-4pt}}
 
 \renewcommand{\labelitemii}{$\circ$}
 
-\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
-\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeSubItemListStart}{\begin{itemize}[leftmargin=*]}
+\newcommand{\resumeSubItemListEnd}{\end{itemize}}
 \newcommand{\resumeItemListStart}{\begin{itemize}}
 \newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
 
@@ -96,29 +93,24 @@
 
 %-----------EDUCATION-----------------
 \section{Education}
-  \resumeSubHeadingListStart
-    \resumeSubheading
-      {Indian Institute of Technology Roorkee}{Roorkee, India}
-      {Bachelor of Technology in Civil Engineering}{July 2015 -- May 2019}
-  \resumeSubHeadingListEnd
+  \resumeSubItemListStart
+    \resumeSubItem {Indian Institute of Technology Roorkee}{Roorkee, India}
+    \resumeSubSubItem{Bachelor of Technology in Civil Engineering}{July 2015 -- May 2019}
+  \resumeSubItemListEnd
 
 
 %-----------EXPERIENCE-----------------
 \section{Experience and Projects}
-  \resumeSubHeadingListStart
+  \resumeSubItemListStart
+    \resumeSubItem {Goldman Sachs} {Singapore} 
+    \resumeSubSubItem {\underline{Executive Director}} {Jan 2025 - Present}
+      \resumeItemListStart
+        \resumeItem{} {\textbf{Automated release workflows} by integrating GitLab, Confluence & internal APIs, \textbf{saving developer time of 30–40 hours/month} and accelerating deployment cycles.}
+        \resumeItem{} {\textbf{Centralized system observability}: Engineered Grafana, Pyroscope dashboards for instrumentation metrics to enable in-depth real-time performance analysis}
+        \resumeItem{} {\textbf{Spearheadeding E2E delivery} of a new trading workflow collaborating across 6 teams: consolidating requirements, managing dependencies, and driving phased rollout for \textbf{accelerated time-to-market}.}
+      \resumeItemListEnd
 
-  \resumeSubheading
-    {Goldman Sachs}{Singapore}
-    {Executive Director}{Jan 2025 - Present}
-    \resumeItemListStart
-      \resumeItem{} {\textbf{Automated release workflows} by integrating GitLab, Confluence & internal APIs, \textbf{saving developer time of 30–40 hours/month} and accelerating deployment cycles.}
-      \resumeItem{} {\textbf{Centralized system observability}: Engineered Grafana, Pyroscope dashboards for instrumentation metrics to enable in-depth real-time performance analysis}
-      \resumeItem{} {\textbf{Spearheadeding E2E delivery} of a new trading workflow collaborating across 6 teams: consolidating requirements, managing dependencies, and driving phased rollout for \textbf{accelerated time-to-market}.}
-    \resumeItemListEnd
-
-    \resumeSubheading
-      {Goldman Sachs}{Singapore}
-      {Associate}{Jan 2023 - Present}
+    \resumeSubSubItem {Associate}{Jan 2023 - Jan 2025}
       \resumeItemListStart
         \resumeItem{} {\textbf{Architected exchange connectivity solutions using JNA/Java & OMnet API}, while leading resiliency enhancements for Listed Clearing apps (POC role).}
         \resumeItem{} {\textbf{Modernized legacy systems}: Created viable QA/dev environments for 10+ yr old systems and migrated workflows to modern stacks for sustainable enhancements.}
@@ -127,9 +119,7 @@
         \resumeItem{} {\textbf{Mentored junior developers / interns} on business/technical domains and streamlined onboarding.}
       \resumeItemListEnd
 
-    \resumeSubheading
-      {Goldman Sachs}{Singapore}
-      {Analyst}{Nov 2021 - Jan 2023}
+    \resumeSubSubItem {Analyst}{Nov 2021 - Jan 2023}
       \resumeItemListStart
         \resumeItem{} {Implemented backend solutions to \textbf{support onboarding of new businesses} for Asia Listed Clearing operations}
         \resumeItem{} {Developed a web-based tool to trace and link data across internal systems, \textbf{improving support workflows and debugging efficiency}}
@@ -137,9 +127,8 @@
         \resumeItem{} {Maintained and enhanced External Connectivity Applications to ensure seamless data exchange between systems}
       \resumeItemListEnd
 
-    \resumeSubheading
-      {Works Applications}{Singapore}
-      {Software Engineer}{Oct 2019 - Oct 2021}
+    \resumeSubItem {Works Applications}{Singapore}
+      \resumeSubSubItem{Software Engineer}{Oct 2019 - Oct 2021}
       \resumeItemListStart
         \resumeItem{} {Designed and developed a UI customization app to streamline \textbf{client–consultant collaboration}.}
         \resumeItem{} {\textbf{Created Angular code generator} saving \textbf{1,200+ man-hours} via reusable design patterns}
@@ -148,41 +137,39 @@
         \resumeItem{} {\textbf{Liaised with managers/consultants} to translate business needs into technical requirements.}
       \resumeItemListEnd
 
-    \resumeSubheading
-      {Spookfish Innovations}{Bangalore, India}
-      {Deep Learning Engineer (Internship)}{May 2018 - Jul 2018}
+    \resumeSubItem {Spookfish Innovations}{Bangalore, India}
+      \resumeSubSubItem {Deep Learning Engineer (Internship)}{May 2018 - Jul 2018}
       \resumeItemListStart
         \resumeItem{} {\textbf{Developed and deployed a pose-comparison model} adopted by cricketers to correct critical body positioning}
         \resumeItem{} {Integrated cross-modal (thermal/RGB) pose estimation through custom calibration and model development}
       \resumeItemListEnd
     
-    \resumeSubheading
-      {Indian Institute of Technology}{Roorkee, India}
-      {Research}{Aug 2018 - May 2019}
+    \resumeSubItem {Indian Institute of Technology}{Roorkee, India}
+      \resumeSubSubItem {Research}{Aug 2018 - May 2019}
       \resumeItemListStart
         \resumeItem{} {Developed an indoor selfdriving bot with Kinect for depth sensing, reducing cost by 50\% over traditional LIDAR}
         \resumeItem{} {Simulated complex 3D mazes in Blender to optimize mapping and exploration algorithms for new environments}
       \resumeItemListEnd
-  \resumeSubHeadingListEnd
+  \resumeSubItemListEnd
 
 %--------Technical Skills------------
 \section{Technical Skills}
-  \resumeSubHeadingListStart
+  \resumeSubItemListStart
     \item{ \textbf{Languages : }{Java, Javascript, Typescript, Bash, Python, C/C++, SQL, HTML, CSS} }
     \item{ \textbf{Frameworks \& Technologies : }{Spring, Angular, React, Node.js, Git, MySQL, DB2, Sybase, Kafka, Docker, Prometheus, Grafana, Vim} }
     \item{ \textbf{Others}: AWS EC2, S3, Lambda; GitLab, Confluence API; }
-  \resumeSubHeadingListEnd
+  \resumeSubItemListEnd
   
 \section{Awards}
-  \resumeSubHeadingListStart
+  \resumeSubItemListStart
     \item{ {Secured 3rd Rank in The Young Optimization Crackerjack Contest conducted by IEOR @ IITB \& McKinsey Knowledge Centre India.} }
     \item{ {Ranked 4th in GSC-Brainwaves Hackathon organized by Societe Generale for innovative tech solutions} }
-  \resumeSubHeadingListEnd
+  \resumeSubItemListEnd
 
 \section{Languages}
-  \resumeSubHeadingListStart
+  \resumeSubItemListStart
     \item{ {English, Hindi, Telugu.} }
-  \resumeSubHeadingListEnd
+  \resumeSubItemListEnd
 
 %-------------------------------------------
 \end{document}
