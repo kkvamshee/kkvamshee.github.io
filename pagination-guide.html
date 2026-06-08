@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagination — Complete Engineering Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #0d0e0f;
+    --surface: #141618;
+    --surface2: #1c1f22;
+    --border: #2a2d32;
+    --accent: #e8c84a;
+    --accent2: #4a9eed;
+    --accent3: #e86a4a;
+    --accent4: #4ae8a0;
+    --text: #d8dde6;
+    --text-muted: #7a8494;
+    --text-dim: #4a5260;
+    --code-bg: #0a0b0c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .hero {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 48px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(232,200,74,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-subtitle {
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 640px;
+    font-style: italic;
+  }
+  .exam-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    padding: 8px 16px;
+    background: rgba(232,106,74,0.12);
+    border: 1px solid rgba(232,106,74,0.3);
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent3);
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 48px;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 28px 32px;
+    margin-bottom: 48px;
+    border-radius: 2px;
+  }
+  .toc-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .toc ol {
+    list-style: none;
+    columns: 2;
+    column-gap: 32px;
+  }
+  .toc li {
+    padding: 3px 0;
+    font-size: 13px;
+  }
+  .toc a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    transition: color 0.15s;
+  }
+  .toc a:hover { color: var(--accent); }
+  .toc .toc-num { color: var(--text-dim); margin-right: 8px; }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 64px;
+    padding-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+  h2 .accent { color: var(--accent); }
+  h3 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--accent2);
+    margin: 32px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent4);
+    margin: 20px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  p { margin-bottom: 14px; color: var(--text); }
+  strong { color: #fff; font-weight: 600; }
+  em { color: var(--accent); font-style: normal; font-family: 'IBM Plex Mono', monospace; font-size: 0.9em; }
+
+  /* CODE */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 16px 0 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.875em;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--accent4);
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    color: var(--text);
+  }
+  .kw { color: var(--accent2); }
+  .str { color: #98c379; }
+  .cm { color: var(--text-dim); font-style: italic; }
+  .fn { color: var(--accent4); }
+  .num { color: #d19a66; }
+  .type { color: var(--accent); }
+
+  /* CALLOUTS */
+  .callout {
+    border-left: 3px solid;
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 14px;
+  }
+  .callout.warn { border-color: var(--accent3); background: rgba(232,106,74,0.07); }
+  .callout.info { border-color: var(--accent2); background: rgba(74,158,237,0.07); }
+  .callout.tip  { border-color: var(--accent4); background: rgba(74,232,160,0.07); }
+  .callout.key  { border-color: var(--accent);  background: rgba(232,200,74,0.07); }
+  .callout-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .callout.warn .callout-title { color: var(--accent3); }
+  .callout.info .callout-title { color: var(--accent2); }
+  .callout.tip  .callout-title { color: var(--accent4); }
+  .callout.key  .callout-title { color: var(--accent); }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; margin: 20px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 2px solid var(--accent);
+  }
+  thead th {
+    padding: 10px 16px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  tbody tr:hover { background: var(--surface2); }
+  tbody td {
+    padding: 10px 16px;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  td.good { color: var(--accent4); }
+  td.bad  { color: var(--accent3); }
+  td.ok   { color: var(--accent); }
+
+  /* COMPARISON CARDS */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px;
+  }
+  .card-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .card-title.blue { color: var(--accent2); }
+  .card-title.yellow { color: var(--accent); }
+  .card-title.green { color: var(--accent4); }
+  .card-title.red { color: var(--accent3); }
+  .card ul { list-style: none; }
+  .card li { font-size: 13px; color: var(--text-muted); padding: 3px 0; }
+  .card li::before { content: '→ '; color: var(--text-dim); }
+
+  /* VERDICT CHIPS */
+  .chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .chip.green { background: rgba(74,232,160,0.15); color: var(--accent4); }
+  .chip.yellow { background: rgba(232,200,74,0.15); color: var(--accent); }
+  .chip.red { background: rgba(232,106,74,0.15); color: var(--accent3); }
+
+  /* FORMULA BLOCKS */
+  .formula {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 14px 20px;
+    margin: 12px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, var(--accent), transparent);
+    margin: 28px 0;
+    opacity: 0.4;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 32px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 36px 24px; }
+    .container { padding: 32px 24px; }
+    .toc ol { columns: 1; }
+    h2 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Systems Design · Complete Reference</div>
+  <h1>The Complete Guide to<br><span>Pagination</span></h1>
+  <p class="hero-subtitle">Every strategy, trade-off, implementation, and integration pattern — from database internals to UI/UX. Built for exams. Usable in production.</p>
+  <div class="exam-badge">⚡ EXAM-READY REFERENCE — covers LLD, HLD, DB, APIs, UI, Trade-offs</div>
+</div>
+
+<div class="container">
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">Table of Contents</div>
+  <ol>
+    <li><a href="#s1"><span class="toc-num">01.</span> What Is Pagination & Why It Exists</a></li>
+    <li><a href="#s2"><span class="toc-num">02.</span> Offset / Page-Based Pagination</a></li>
+    <li><a href="#s3"><span class="toc-num">03.</span> Cursor / Keyset Pagination</a></li>
+    <li><a href="#s4"><span class="toc-num">04.</span> Seek Method (Bookmark Pagination)</a></li>
+    <li><a href="#s5"><span class="toc-num">05.</span> Time-Based Pagination</a></li>
+    <li><a href="#s6"><span class="toc-num">06.</span> Hybrid & Composite Strategies</a></li>
+    <li><a href="#s7"><span class="toc-num">07.</span> Database Internals & Indexing</a></li>
+    <li><a href="#s8"><span class="toc-num">08.</span> REST API Design</a></li>
+    <li><a href="#s9"><span class="toc-num">09.</span> GraphQL Pagination</a></li>
+    <li><a href="#s10"><span class="toc-num">10.</span> WebSockets & Real-Time Pagination</a></li>
+    <li><a href="#s11"><span class="toc-num">11.</span> High-Level / Distributed Systems Design</a></li>
+    <li><a href="#s12"><span class="toc-num">12.</span> Caching Strategies</a></li>
+    <li><a href="#s13"><span class="toc-num">13.</span> UI/UX Patterns</a></li>
+    <li><a href="#s14"><span class="toc-num">14.</span> Search & Elasticsearch</a></li>
+    <li><a href="#s15"><span class="toc-num">15.</span> Master Trade-off Table</a></li>
+    <li><a href="#s16"><span class="toc-num">16.</span> Common Exam Questions & Answers</a></li>
+  </ol>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-label">Section 01</div>
+  <h2>What Is Pagination & <span class="accent">Why It Exists</span></h2>
+
+  <p>Pagination is the practice of breaking a large dataset into smaller, sequential chunks (pages) that are delivered and rendered incrementally. It is one of the most fundamental problems in systems design because nearly every production system eventually handles datasets too large to return in a single response.</p>
+
+  <h3>Core Problems Pagination Solves</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title blue">Memory Pressure</div>
+      <ul>
+        <li>DB can't hold millions of rows in RAM for sorting</li>
+        <li>Application server would OOM serialising large JSON</li>
+        <li>Client browser would freeze rendering 100k rows</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title yellow">Latency</div>
+      <ul>
+        <li>Full table scans take seconds for large tables</li>
+        <li>Network transfer of large payloads is slow</li>
+        <li>Time-to-first-byte (TTFB) suffers without chunking</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title green">Cost</div>
+      <ul>
+        <li>Unnecessary rows read = wasted DB I/O</li>
+        <li>Bandwidth charges per GB transferred</li>
+        <li>Compute cost for serialising unused data</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title red">Consistency</div>
+      <ul>
+        <li>Underlying data changes between page fetches</li>
+        <li>"Phantom rows" appearing or disappearing</li>
+        <li>Duplicate entries at page boundaries</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Fundamental Concepts</h3>
+  <p><strong>Page Size (limit):</strong> Number of records per page. Chosen based on UX needs vs. backend cost. Typical values: 10–25 for UI, 100–1000 for API consumers, up to 10,000 for ETL/export.</p>
+  <p><strong>Page Identifier:</strong> How the system knows which page to return. This is the key differentiator between pagination strategies — it is either a <strong>positional</strong> (OFFSET) or a <strong>relational</strong> (cursor/key) identifier.</p>
+  <p><strong>Total Count:</strong> Not always necessary and often expensive. Many modern APIs omit it. When present, enables progress indicators. When absent, requires "load more" UX patterns.</p>
+  <p><strong>Stable Ordering:</strong> All pagination strategies require a <strong>deterministic, stable sort</strong>. Without it, the same query run twice can return different orderings, causing rows to be skipped or duplicated across pages.</p>
+
+  <div class="callout key">
+    <div class="callout-title">The Pagination Trilemma</div>
+    You generally cannot have all three simultaneously: <strong>arbitrary navigation</strong> (jump to page N), <strong>consistency</strong> (no duplicates/skips), and <strong>performance at scale</strong>. Every strategy makes a different trade-off among these three.
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-label">Section 02</div>
+  <h2>Offset / <span class="accent">Page-Based</span> Pagination</h2>
+
+  <p>The most intuitive and widely implemented strategy. The client specifies how many rows to skip (<code>OFFSET</code>) and how many to return (<code>LIMIT</code>).</p>
+
+  <h3>SQL Implementation</h3>
+<pre><code><span class="cm">-- Page 1 (rows 1–20)</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> orders
+<span class="kw">ORDER BY</span> created_at <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">20</span> <span class="kw">OFFSET</span> <span class="num">0</span>;
+
+<span class="cm">-- Page 3 (rows 41–60)</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> orders
+<span class="kw">ORDER BY</span> created_at <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">20</span> <span class="kw">OFFSET</span> <span class="num">40</span>;
+
+<span class="cm">-- Total count (for progress bar)</span>
+<span class="kw">SELECT COUNT</span>(*) <span class="kw">FROM</span> orders; <span class="cm">-- EXPENSIVE on large tables</span></code></pre>
+
+  <div class="formula">OFFSET = (page_number - 1) × page_size</div>
+
+  <h3>REST API Design</h3>
+<pre><code><span class="cm"># Request</span>
+GET /api/orders?page=3&page_size=20
+
+<span class="cm"># Response</span>
+{
+  "data": [...],
+  "pagination": {
+    "page": 3,
+    "page_size": 20,
+    "total_count": 1847,
+    "total_pages": 93,
+    "has_next": true,
+    "has_prev": true
+  }
+}</code></pre>
+
+  <h3>How the Database Actually Executes OFFSET</h3>
+  <p>This is the critical insight most engineers miss. The database does <strong>not</strong> skip rows cheaply. It must:</p>
+  <ol style="padding-left: 20px; color: var(--text); margin-bottom: 14px;">
+    <li style="padding: 4px 0;">Read ALL rows matching the WHERE clause</li>
+    <li style="padding: 4px 0;">Sort them (if not covered by an index)</li>
+    <li style="padding: 4px 0;">Discard the first OFFSET rows</li>
+    <li style="padding: 4px 0;">Return the next LIMIT rows</li>
+  </ol>
+
+  <div class="callout warn">
+    <div class="callout-title">The Deep Pagination Problem</div>
+    <code>OFFSET 1000000 LIMIT 20</code> forces the DB to read and discard 1 million rows before returning your 20. At large offsets, this is catastrophically slow — O(OFFSET) time complexity. This is called the <strong>late row lookup problem</strong> or <strong>deep pagination problem</strong>.
+  </div>
+
+  <h3>The "Deferred Join" / Index Scan Optimisation</h3>
+  <p>Use a subquery or CTE to first get only the primary keys via the index, then join back to fetch full row data. This is significantly faster because it avoids fetching wide rows during the offset phase:</p>
+
+<pre><code><span class="cm">-- SLOW: Fetches full row data for all OFFSET rows</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> orders <span class="kw">ORDER BY</span> id <span class="kw">LIMIT</span> <span class="num">20</span> <span class="kw">OFFSET</span> <span class="num">100000</span>;
+
+<span class="cm">-- FAST: Index-only scan for offset, then narrow join</span>
+<span class="kw">SELECT</span> o.* <span class="kw">FROM</span> orders o
+<span class="kw">INNER JOIN</span> (
+  <span class="kw">SELECT</span> id <span class="kw">FROM</span> orders <span class="kw">ORDER BY</span> id <span class="kw">LIMIT</span> <span class="num">20</span> <span class="kw">OFFSET</span> <span class="num">100000</span>
+) ids <span class="kw">ON</span> o.id = ids.id;</code></pre>
+
+  <h3>Consistency Problem: The Shifting Dataset</h3>
+  <p>When records are inserted or deleted between page fetches, offset-based pagination produces incorrect results:</p>
+  <p><strong>Scenario:</strong> User views page 1 (rows 1–10). A new record is inserted. User requests page 2 (rows 11–20). The old row 10 is now row 11 — it appears again. This is called a <strong>phantom read</strong>.</p>
+
+  <h3>Summary</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Dimension</th><th>Assessment</th></tr></thead>
+    <tbody>
+      <tr><td>Arbitrary navigation (jump to page N)</td><td class="good">✓ Excellent</td></tr>
+      <tr><td>Performance on small datasets (&lt;100k rows)</td><td class="good">✓ Good</td></tr>
+      <tr><td>Performance on large offsets</td><td class="bad">✗ Poor — O(n) scan</td></tr>
+      <tr><td>Consistency during mutations</td><td class="bad">✗ Poor — phantom reads</td></tr>
+      <tr><td>Implementation complexity</td><td class="good">✓ Very simple</td></tr>
+      <tr><td>Client state required</td><td class="good">✓ Just page number</td></tr>
+      <tr><td>Compatible with COUNT(*)</td><td class="good">✓ Yes</td></tr>
+    </tbody>
+  </table></div>
+
+  <p><strong>Best suited for:</strong> Admin panels, content management, low-write datasets, internal tools, any use case requiring "jump to page N" where data mutates slowly.</p>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-label">Section 03</div>
+  <h2>Cursor / <span class="accent">Keyset</span> Pagination</h2>
+
+  <p>Instead of telling the database how many rows to skip, cursor pagination tells it <em>where to continue from</em>. The cursor is a pointer into the dataset — typically an encoded value of the last record seen.</p>
+
+  <h3>Core Mechanism</h3>
+  <p>A cursor encodes the sort key(s) of the last item returned. On the next request, a <code>WHERE</code> clause replaces the <code>OFFSET</code>, allowing the DB to seek directly to the right position using an index.</p>
+
+<pre><code><span class="cm">-- First page (no cursor)</span>
+<span class="kw">SELECT</span> id, created_at, title <span class="kw">FROM</span> posts
+<span class="kw">ORDER BY</span> created_at <span class="kw">DESC</span>, id <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">20</span>;
+
+<span class="cm">-- Subsequent page: last item had created_at='2024-01-15 10:30:00', id=4892</span>
+<span class="kw">SELECT</span> id, created_at, title <span class="kw">FROM</span> posts
+<span class="kw">WHERE</span> (created_at, id) &lt; (<span class="str">'2024-01-15 10:30:00'</span>, <span class="num">4892</span>)
+<span class="kw">ORDER BY</span> created_at <span class="kw">DESC</span>, id <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">20</span>;</code></pre>
+
+  <div class="callout tip">
+    <div class="callout-title">Row Value Comparison</div>
+    The <code>(col1, col2) &lt; (val1, val2)</code> syntax (tuple comparison / row value comparison) is supported in PostgreSQL and MySQL. It correctly handles the composite seek: it means "col1 &lt; val1, OR (col1 = val1 AND col2 &lt; val2)". This is essential when the sort key is not unique.
+  </div>
+
+  <h3>Why It's Faster: Index Seek vs Index Scan</h3>
+  <p>With an index on <code>(created_at DESC, id DESC)</code>, the <code>WHERE (created_at, id) &lt; (...)</code> clause does a B-tree <strong>seek</strong> — O(log N) — directly to the right position, then scans forward for LIMIT rows. No rows are discarded. Compare this to OFFSET which always scans and discards.</p>
+
+  <h3>Cursor Encoding</h3>
+  <p>Cursors should be opaque to clients — they should not be interpretable or manually constructable. Common approaches:</p>
+
+<pre><code><span class="cm">// Option 1: Base64 encode the sort key(s)</span>
+<span class="kw">const</span> cursor = btoa(JSON.stringify({
+  created_at: <span class="str">"2024-01-15T10:30:00Z"</span>,
+  id: <span class="num">4892</span>
+}));
+<span class="cm">// → "eyJjcmVhdGVkX2F0IjoiMjAyNC0wMS0xNVQxMDozMDowMFoiLCJpZCI6NDg5Mn0="</span>
+
+<span class="cm">// Option 2: Encrypt cursor (prevents cursor injection attacks)</span>
+<span class="kw">const</span> cursor = encrypt(JSON.stringify({created_at, id}), SECRET_KEY);
+
+<span class="cm">// Option 3: Server-side cursor storage (Redis)</span>
+<span class="kw">const</span> cursorId = uuidv4();
+<span class="kw">await</span> redis.setex(<span class="str">`cursor:</span>${cursorId}<span class="str">`</span>, <span class="num">3600</span>, JSON.stringify({created_at, id}));
+<span class="cm">// Returns cursorId to client; server looks up actual values</span></code></pre>
+
+  <h3>Handling Non-Unique Sort Keys</h3>
+  <p>If <code>ORDER BY created_at</code> and multiple rows share the same timestamp, the cursor is ambiguous. <strong>Always add a unique tiebreaker</strong> (usually <code>id</code>) to the sort key. This is the most common cursor pagination bug.</p>
+
+  <h3>Bi-directional Cursors</h3>
+  <p>For "previous page" support, you need both a <em>before</em> and <em>after</em> cursor. This requires reversing the sort order for the previous-page query:</p>
+
+<pre><code><span class="cm">-- Previous page: reverse sort, then re-reverse in application</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> posts
+<span class="kw">WHERE</span> (created_at, id) &gt; (:cursor_created_at, :cursor_id)
+<span class="kw">ORDER BY</span> created_at <span class="kw">ASC</span>, id <span class="kw">ASC</span>  <span class="cm">-- reversed</span>
+<span class="kw">LIMIT</span> <span class="num">20</span>;
+<span class="cm">-- Then reverse the result set in application code</span></code></pre>
+
+  <h3>REST API Design</h3>
+<pre><code>GET /api/posts?limit=20&after=eyJjcmVhdGVkX2F0IjoiMjAyN...
+
+{
+  "data": [...],
+  "pagination": {
+    "next_cursor": "eyJjcmVhdGVkX2F0IjoiMjAyNC0wMS0xMyIsImlkIjo0ODcyfQ==",
+    "prev_cursor": "eyJjcmVhdGVkX2F0IjoiMjAyNC0wMS0xNSIsImlkIjo0ODkyfQ==",
+    "has_next": true,
+    "has_prev": true
+    // NOTE: no total_count — impossible to compute efficiently
+  }
+}</code></pre>
+
+  <h3>Summary</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Dimension</th><th>Assessment</th></tr></thead>
+    <tbody>
+      <tr><td>Arbitrary navigation (jump to page N)</td><td class="bad">✗ Not possible without scanning</td></tr>
+      <tr><td>Performance at any depth</td><td class="good">✓ O(log N) — constant regardless of depth</td></tr>
+      <tr><td>Consistency during inserts</td><td class="good">✓ No phantom reads</td></tr>
+      <tr><td>Consistency during deletes</td><td class="ok">~ Can skip items if cursor row is deleted</td></tr>
+      <tr><td>Total count</td><td class="bad">✗ Not available without COUNT(*)</td></tr>
+      <tr><td>Implementation complexity</td><td class="ok">~ Moderate</td></tr>
+      <tr><td>Bi-directional</td><td class="ok">~ Possible but complex</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-label">Section 04</div>
+  <h2>Seek Method & <span class="accent">Bookmark Pagination</span></h2>
+
+  <p>The Seek Method (coined by Markus Winand) is essentially keyset pagination made explicit — it uses <code>WHERE</code> conditions to "seek" past already-seen records. Bookmark pagination is a variant where the server stores the cursor server-side and returns an opaque bookmark token.</p>
+
+  <h3>Seek Method in Detail</h3>
+<pre><code><span class="cm">-- Multi-column seek with mixed sort directions</span>
+<span class="cm">-- ORDER BY last_name ASC, first_name ASC, id ASC</span>
+
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users
+<span class="kw">WHERE</span>
+  last_name &gt; :last_name
+  <span class="kw">OR</span> (last_name = :last_name <span class="kw">AND</span> first_name &gt; :first_name)
+  <span class="kw">OR</span> (last_name = :last_name <span class="kw">AND</span> first_name = :first_name <span class="kw">AND</span> id &gt; :id)
+<span class="kw">ORDER BY</span> last_name <span class="kw">ASC</span>, first_name <span class="kw">ASC</span>, id <span class="kw">ASC</span>
+<span class="kw">LIMIT</span> <span class="num">20</span>;</code></pre>
+
+  <p>This explicit OR expansion is equivalent to row value comparison but works in all databases including those that don't support tuple comparison (SQLite, some older MySQL versions).</p>
+
+  <h3>Server-Side Bookmark Storage</h3>
+  <p>Instead of encoding cursor data in the token, store it server-side in Redis and return an opaque UUID. This prevents clients from reverse-engineering or forging cursors, and allows cursors to carry arbitrary metadata:</p>
+
+<pre><code><span class="cm">// Server: create bookmark</span>
+<span class="kw">async function</span> <span class="fn">createBookmark</span>(lastRow, userId, queryParams) {
+  <span class="kw">const</span> bookmarkId = uuidv4();
+  <span class="kw">await</span> redis.setex(
+    <span class="str">`bookmark:</span>${userId}<span class="str">:</span>${bookmarkId}<span class="str">`</span>,
+    <span class="num">86400</span>,  <span class="cm">// 24h TTL</span>
+    JSON.stringify({ lastRow, queryParams, createdAt: Date.now() })
+  );
+  <span class="kw">return</span> bookmarkId;
+}
+
+<span class="cm">// Server: resolve bookmark</span>
+<span class="kw">async function</span> <span class="fn">resolveBookmark</span>(bookmarkId, userId) {
+  <span class="kw">const</span> data = <span class="kw">await</span> redis.get(<span class="str">`bookmark:</span>${userId}<span class="str">:</span>${bookmarkId}<span class="str">`</span>);
+  <span class="kw">if</span> (!data) <span class="kw">throw new</span> Error(<span class="str">'Cursor expired or invalid'</span>);
+  <span class="kw">return</span> JSON.parse(data);
+}</code></pre>
+
+  <div class="callout info">
+    <div class="callout-title">When to Use Server-Side Cursors</div>
+    Server-side cursors are preferable when: (1) cursor data is large, (2) you need cursor expiry/revocation, (3) security is critical and you don't want clients to see pagination internals, (4) you want to prevent cursor replay attacks.
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="section-label">Section 05</div>
+  <h2>Time-Based <span class="accent">Pagination</span></h2>
+
+  <p>Time-based pagination uses timestamp ranges instead of offsets or cursors. It's a natural fit for time-series data, feeds, logs, and audit trails.</p>
+
+  <h3>Fixed Time Windows</h3>
+<pre><code><span class="cm">-- Fetch events in a specific hour</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> events
+<span class="kw">WHERE</span> occurred_at &gt;= <span class="str">'2024-01-15 10:00:00'</span>
+  <span class="kw">AND</span> occurred_at &lt; <span class="str">'2024-01-15 11:00:00'</span>
+<span class="kw">ORDER BY</span> occurred_at <span class="kw">ASC</span>
+<span class="kw">LIMIT</span> <span class="num">1000</span>;</code></pre>
+
+  <h3>Sliding Time Windows (Feed Pattern)</h3>
+<pre><code>GET /api/feed?before=2024-01-15T10:30:00Z&limit=20
+GET /api/feed?after=2024-01-15T10:30:00Z&limit=20
+
+<span class="cm">-- "Load newer" (pull-to-refresh)</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> posts
+<span class="kw">WHERE</span> created_at &gt; :since_timestamp
+<span class="kw">ORDER BY</span> created_at <span class="kw">ASC</span>
+<span class="kw">LIMIT</span> <span class="num">50</span>;
+
+<span class="cm">-- "Load older" (infinite scroll downward)</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> posts
+<span class="kw">WHERE</span> created_at &lt; :before_timestamp
+<span class="kw">ORDER BY</span> created_at <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">20</span>;</code></pre>
+
+  <h3>The Timestamp Tie Problem</h3>
+  <p>Multiple events can share the same timestamp (especially at millisecond or even microsecond resolution under high write load). Always combine timestamp with a unique ID as a tiebreaker. Alternatively, use a <strong>monotonic sequence</strong> (Snowflake ID, ULID) that encodes time in the ID itself:</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title yellow">Snowflake ID</div>
+      <ul>
+        <li>41 bits timestamp (ms precision)</li>
+        <li>10 bits machine/datacenter ID</li>
+        <li>12 bits sequence number</li>
+        <li>Globally sortable by time, unique</li>
+        <li>Used by: Twitter, Discord</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title green">ULID</div>
+      <ul>
+        <li>48 bits timestamp</li>
+        <li>80 bits random</li>
+        <li>Lexicographically sortable</li>
+        <li>URL-safe (Crockford Base32)</li>
+        <li>Drop-in UUID replacement</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title blue">UUID v7</div>
+      <ul>
+        <li>48 bits Unix timestamp (ms)</li>
+        <li>74 bits random</li>
+        <li>Monotonically increasing</li>
+        <li>RFC-standard format</li>
+        <li>Native DB support emerging</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="section-label">Section 06</div>
+  <h2>Hybrid & <span class="accent">Composite</span> Strategies</h2>
+
+  <h3>Offset + Cursor Hybrid</h3>
+  <p>Use offset pagination for the first N pages (fast, enables page jumping) and automatically switch to cursor pagination for deep pages. This is used by Google Search — you can jump to pages 1–10 easily, but can't jump to page 10,000.</p>
+
+<pre><code><span class="kw">function</span> <span class="fn">paginate</span>(page, pageSize) {
+  <span class="kw">const</span> DEEP_PAGE_THRESHOLD = <span class="num">100</span>;
+  <span class="kw">if</span> (page &lt;= DEEP_PAGE_THRESHOLD) {
+    <span class="kw">return</span> offsetPaginate(page, pageSize);
+  }
+  <span class="cm">// For deep pages, use a pre-computed cursor at a checkpoint</span>
+  <span class="kw">const</span> checkpoint = getCheckpointCursor(DEEP_PAGE_THRESHOLD, pageSize);
+  <span class="kw">const</span> remainingOffset = (page - DEEP_PAGE_THRESHOLD - <span class="num">1</span>) * pageSize;
+  <span class="kw">return</span> cursorPaginateFromCheckpoint(checkpoint, remainingOffset);
+}</code></pre>
+
+  <h3>Keyset + Total Count</h3>
+  <p>Run the COUNT query asynchronously or use an approximation (PostgreSQL's <code>pg_class.reltuples</code>) to provide a progress indicator alongside cursor pagination:</p>
+
+<pre><code><span class="cm">-- PostgreSQL approximate count (near-instant)</span>
+<span class="kw">SELECT</span> reltuples::bigint <span class="kw">AS</span> approx_count
+<span class="kw">FROM</span> pg_class
+<span class="kw">WHERE</span> relname = <span class="str">'orders'</span>;
+
+<span class="cm">-- Or with filtered WHERE clause: use EXPLAIN to get estimate</span>
+<span class="kw">EXPLAIN SELECT</span> * <span class="kw">FROM</span> orders <span class="kw">WHERE</span> status = <span class="str">'pending'</span>;
+<span class="cm">-- Parse "rows=XXXX" from output</span></code></pre>
+
+  <h3>Snapshot Pagination</h3>
+  <p>For guaranteed consistency across all pages, take a snapshot of the dataset and paginate over it. Used in financial reports, exports, and audit contexts:</p>
+<pre><code><span class="cm">-- PostgreSQL: use a transaction with REPEATABLE READ isolation</span>
+<span class="kw">BEGIN</span> TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> transactions
+<span class="kw">ORDER BY</span> id
+<span class="kw">LIMIT</span> <span class="num">100</span> <span class="kw">OFFSET</span> :offset;
+
+<span class="cm">-- All subsequent queries in this transaction see the same snapshot</span>
+<span class="kw">COMMIT</span>;</code></pre>
+
+  <div class="callout warn">
+    <div class="callout-title">Snapshot Limitations</div>
+    Long-running snapshot transactions hold open read locks and can prevent VACUUM in PostgreSQL. For very large exports, use a materialized view, a temporary table, or an async export job instead.
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="section-label">Section 07</div>
+  <h2>Database Internals & <span class="accent">Indexing</span></h2>
+
+  <h3>Why Index Design Is Critical for Pagination</h3>
+  <p>The entire performance difference between pagination strategies comes down to what the database's query planner can do with the available indexes.</p>
+
+  <h3>B-Tree Index and Pagination</h3>
+  <p>B-Tree (Balanced Tree) indexes are the default in PostgreSQL, MySQL, and most relational databases. For pagination:</p>
+  <ul style="padding-left: 20px; color: var(--text); margin-bottom: 14px;">
+    <li style="padding: 4px 0;"><strong>Seeks</strong> (cursor WHERE clause) cost O(log N) — traversing tree height</li>
+    <li style="padding: 4px 0;"><strong>Range scans</strong> (scanning LIMIT rows after seek) cost O(LIMIT) — sequential leaf node traversal</li>
+    <li style="padding: 4px 0;"><strong>Total cost per page</strong>: O(log N + LIMIT) — independent of depth</li>
+  </ul>
+
+  <h3>Covering Indexes</h3>
+  <p>A covering index includes all columns referenced in the query, eliminating the need for a heap lookup (table row fetch). For pagination queries, this means the DB never touches the table — only the index:</p>
+
+<pre><code><span class="cm">-- Query</span>
+<span class="kw">SELECT</span> id, title, created_at <span class="kw">FROM</span> posts
+<span class="kw">WHERE</span> (created_at, id) &lt; (:ts, :id)
+<span class="kw">ORDER BY</span> created_at <span class="kw">DESC</span>, id <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">20</span>;
+
+<span class="cm">-- Covering index: includes all SELECT columns + WHERE/ORDER BY columns</span>
+<span class="kw">CREATE INDEX</span> idx_posts_pagination
+  <span class="kw">ON</span> posts (created_at <span class="kw">DESC</span>, id <span class="kw">DESC</span>)
+  <span class="kw">INCLUDE</span> (title);  <span class="cm">-- PostgreSQL 11+ INCLUDE syntax</span>
+
+<span class="cm">-- MySQL equivalent</span>
+<span class="kw">CREATE INDEX</span> idx_posts_pagination
+  <span class="kw">ON</span> posts (created_at <span class="kw">DESC</span>, id, title);</code></pre>
+
+  <h3>Partial Indexes</h3>
+  <p>For paginating over filtered datasets (e.g., <code>WHERE status = 'active'</code>), a partial index over only the matching rows is much smaller and faster:</p>
+<pre><code><span class="kw">CREATE INDEX</span> idx_active_posts_cursor
+  <span class="kw">ON</span> posts (created_at <span class="kw">DESC</span>, id <span class="kw">DESC</span>)
+  <span class="kw">WHERE</span> status = <span class="str">'active'</span>;</code></pre>
+
+  <h3>Index-Only Scans vs Heap Scans</h3>
+  <p>PostgreSQL's visibility map allows <strong>index-only scans</strong> when all required columns are in the index and the heap blocks are all-visible. This is 2–10x faster for pagination. Keep tables well-vacuumed to keep heap blocks marked visible.</p>
+
+  <h3>NoSQL: MongoDB</h3>
+<pre><code><span class="cm">// Offset-based (slow at depth)</span>
+db.orders.find({}).sort({createdAt: -1}).skip(<span class="num">100</span>).limit(<span class="num">20</span>)
+
+<span class="cm">// Cursor-based (fast)</span>
+db.orders.find({
+  createdAt: { $lt: lastCreatedAt },
+  _id: { $lt: lastId }
+}).sort({createdAt: -1, _id: -1}).limit(<span class="num">20</span>)
+
+<span class="cm">// Required index</span>
+db.orders.createIndex({ createdAt: -1, _id: -1 })</code></pre>
+
+  <h3>NoSQL: Cassandra</h3>
+  <p>Cassandra is designed around partition keys and clustering columns. Its data model inherently supports efficient range scans within a partition, making it naturally suited to cursor pagination — but <em>only within a partition</em>. Cross-partition pagination is expensive and discouraged.</p>
+
+<pre><code><span class="cm">-- Cassandra table designed for timeline pagination</span>
+<span class="kw">CREATE TABLE</span> user_feed (
+  user_id    UUID,
+  post_time  TIMESTAMP,
+  post_id    UUID,
+  content    TEXT,
+  <span class="kw">PRIMARY KEY</span> (user_id, post_time, post_id)
+) <span class="kw">WITH CLUSTERING ORDER BY</span> (post_time <span class="kw">DESC</span>, post_id <span class="kw">DESC</span>);
+
+<span class="cm">-- Efficient cursor pagination (within partition)</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> user_feed
+<span class="kw">WHERE</span> user_id = :uid
+  <span class="kw">AND</span> (post_time, post_id) &lt; (:cursor_time, :cursor_id)
+<span class="kw">LIMIT</span> <span class="num">20</span>;</code></pre>
+
+  <h3>NoSQL: Redis</h3>
+  <p>Redis Sorted Sets (<code>ZSET</code>) are the ideal structure for real-time paginated feeds. Score = timestamp.</p>
+<pre><code><span class="cm"># Add items</span>
+ZADD feed:user:123 1705312200 "post:456"
+ZADD feed:user:123 1705312100 "post:455"
+
+<span class="cm"># Offset pagination (ZRANGE with BYSCORE)</span>
+ZRANGE feed:user:123 +inf -inf BYSCORE LIMIT 0 20 REV
+
+<span class="cm"># Cursor pagination: fetch 20 items before score X</span>
+ZRANGEBYSCORE feed:user:123 -inf (1705312200 LIMIT 0 20
+
+<span class="cm"># Count total (O(1))</span>
+ZCARD feed:user:123</code></pre>
+
+  <h3>Database-Specific Notes</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Database</th><th>OFFSET Support</th><th>Keyset Support</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>PostgreSQL</td><td class="ok">Yes</td><td class="good">Excellent (row value comparison)</td><td>Best-in-class cursor pagination</td></tr>
+      <tr><td>MySQL 8+</td><td class="ok">Yes</td><td class="good">Good (row value comparison)</td><td>InnoDB clustered index helps</td></tr>
+      <tr><td>SQLite</td><td class="ok">Yes</td><td class="ok">Yes (explicit OR expansion)</td><td>No row value comparison syntax</td></tr>
+      <tr><td>MongoDB</td><td class="ok">skip()</td><td class="good">$gt/$lt on indexed fields</td><td>skip() is slow at depth</td></tr>
+      <tr><td>Cassandra</td><td class="bad">No OFFSET</td><td class="good">Native clustering column seek</td><td>Cross-partition is anti-pattern</td></tr>
+      <tr><td>DynamoDB</td><td class="bad">No OFFSET</td><td class="good">ExclusiveStartKey token</td><td>Token is opaque, server-managed</td></tr>
+      <tr><td>Elasticsearch</td><td class="ok">from+size (limit 10k)</td><td class="good">search_after param</td><td>Pit (point-in-time) for consistency</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s8">
+  <div class="section-label">Section 08</div>
+  <h2>REST API <span class="accent">Design Patterns</span></h2>
+
+  <h3>Parameter Conventions</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Style</th><th>Parameters</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>Page-based</td><td>page, per_page / page_size</td><td><code>?page=3&per_page=20</code></td></tr>
+      <tr><td>Offset-based</td><td>offset, limit</td><td><code>?offset=40&limit=20</code></td></tr>
+      <tr><td>Cursor-based</td><td>cursor/after/before, limit</td><td><code>?after=abc123&limit=20</code></td></tr>
+      <tr><td>Time-based</td><td>since, until, limit</td><td><code>?since=2024-01-15T10:30:00Z</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Response Envelope Patterns</h3>
+<pre><code><span class="cm">// Pattern 1: Wrapper envelope (GitHub, Stripe style)</span>
+{
+  <span class="str">"data"</span>: [...],
+  <span class="str">"meta"</span>: {
+    <span class="str">"total"</span>: <span class="num">1847</span>,
+    <span class="str">"page"</span>: <span class="num">3</span>,
+    <span class="str">"per_page"</span>: <span class="num">20</span>
+  },
+  <span class="str">"links"</span>: {
+    <span class="str">"self"</span>: <span class="str">"/api/orders?page=3"</span>,
+    <span class="str">"next"</span>: <span class="str">"/api/orders?page=4"</span>,
+    <span class="str">"prev"</span>: <span class="str">"/api/orders?page=2"</span>,
+    <span class="str">"first"</span>: <span class="str">"/api/orders?page=1"</span>,
+    <span class="str">"last"</span>: <span class="str">"/api/orders?page=93"</span>
+  }
+}
+
+<span class="cm">// Pattern 2: Cursor pagination (Twitter/X, Stripe cursor-mode)</span>
+{
+  <span class="str">"data"</span>: [...],
+  <span class="str">"next_cursor"</span>: <span class="str">"eyJpZCI6NDg5Mn0="</span>,
+  <span class="str">"has_more"</span>: true
+}
+
+<span class="cm">// Pattern 3: Link Headers (RFC 5988) — header-only approach</span>
+<span class="cm">// No pagination in body; links in HTTP headers</span>
+Link: &lt;/api/orders?page=4&gt;; rel="next",
+      &lt;/api/orders?page=2&gt;; rel="prev",
+      &lt;/api/orders?page=1&gt;; rel="first",
+      &lt;/api/orders?page=93&gt;; rel="last"</code></pre>
+
+  <h3>HTTP Headers for Pagination Metadata</h3>
+<pre><code>X-Total-Count: 1847
+X-Page-Count: 93
+X-Current-Page: 3
+X-Per-Page: 20</code></pre>
+
+  <h3>Idempotency & Stability</h3>
+  <p>Pagination requests must be idempotent — the same request must return the same data. This is violated by offset pagination on mutable data. Consider adding a <code>snapshot_at</code> parameter for export use cases.</p>
+
+  <h3>Rate Limiting Considerations</h3>
+  <p>Clients that rapidly iterate all pages can be expensive. Strategies: per-page rate limits, cursor expiry (invalidate old cursors after 24h), maximum page depth limits, and requiring authentication for deep pagination.</p>
+
+  <h3>API Versioning and Pagination</h3>
+  <p>Changing the pagination strategy between API versions (e.g., offset to cursor) is a breaking change. The response shape changes, client code must update, and cursors from v1 are not valid in v2. Version clearly, provide migration guides, and support both strategies during a transition period.</p>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s9">
+  <div class="section-label">Section 09</div>
+  <h2>GraphQL <span class="accent">Pagination</span></h2>
+
+  <h3>The Relay Cursor Connections Spec</h3>
+  <p>The Relay spec (developed by Facebook/Meta) is the de facto standard for GraphQL pagination. It defines a formal shape for paginated results using <strong>connections</strong>, <strong>edges</strong>, and <strong>nodes</strong>.</p>
+
+<pre><code><span class="cm"># GraphQL Query</span>
+query {
+  orders(first: <span class="num">20</span>, after: <span class="str">"cursor_opaque_string"</span>) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+    edges {
+      cursor
+      node {
+        id
+        amount
+        status
+        createdAt
+      }
+    }
+  }
+}</code></pre>
+
+<pre><code><span class="cm">// Response</span>
+{
+  <span class="str">"data"</span>: {
+    <span class="str">"orders"</span>: {
+      <span class="str">"pageInfo"</span>: {
+        <span class="str">"hasNextPage"</span>: true,
+        <span class="str">"hasPreviousPage"</span>: false,
+        <span class="str">"startCursor"</span>: <span class="str">"YXJyYXljb25uZWN0aW9uOjA="</span>,
+        <span class="str">"endCursor"</span>: <span class="str">"YXJyYXljb25uZWN0aW9uOjE5"</span>
+      },
+      <span class="str">"totalCount"</span>: <span class="num">1847</span>,
+      <span class="str">"edges"</span>: [
+        {
+          <span class="str">"cursor"</span>: <span class="str">"YXJyYXljb25uZWN0aW9uOjA="</span>,
+          <span class="str">"node"</span>: { <span class="str">"id"</span>: <span class="str">"1"</span>, <span class="str">"amount"</span>: <span class="num">99.99</span> }
+        }
+      ]
+    }
+  }
+}</code></pre>
+
+  <h3>Relay Connection Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Meaning</th><th>Direction</th></tr></thead>
+    <tbody>
+      <tr><td><code>first: N</code></td><td>Return first N edges after cursor</td><td>Forward</td></tr>
+      <tr><td><code>after: cursor</code></td><td>Start after this cursor</td><td>Forward</td></tr>
+      <tr><td><code>last: N</code></td><td>Return last N edges before cursor</td><td>Backward</td></tr>
+      <tr><td><code>before: cursor</code></td><td>Start before this cursor</td><td>Backward</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout warn">
+    <div class="callout-title">Rule: first/after and last/before must not be combined</div>
+    Combining forward and backward arguments (e.g., <code>first: 5, last: 5</code>) is undefined behaviour in the Relay spec. Validate and reject such combinations server-side.
+  </div>
+
+  <h3>Simple Offset-Based GraphQL (non-Relay)</h3>
+<pre><code>query {
+  orders(limit: <span class="num">20</span>, offset: <span class="num">40</span>) {
+    id
+    amount
+  }
+}
+
+<span class="cm"># Or page-based</span>
+query {
+  orders(page: <span class="num">3</span>, perPage: <span class="num">20</span>) {
+    items { id amount }
+    total
+    pageCount
+  }
+}</code></pre>
+
+  <h3>Implementing Relay in Node.js</h3>
+<pre><code><span class="kw">import</span> { connectionFromArray } <span class="kw">from</span> <span class="str">'graphql-relay'</span>;
+
+<span class="kw">const</span> resolvers = {
+  Query: {
+    orders: <span class="kw">async</span> (_, { first, after, last, before }, ctx) =&gt; {
+      <span class="cm">// Decode cursor</span>
+      <span class="kw">const</span> afterId = after ? decodeCursor(after) : null;
+      <span class="kw">const</span> beforeId = before ? decodeCursor(before) : null;
+
+      <span class="cm">// Build keyset query</span>
+      <span class="kw">const</span> orders = <span class="kw">await</span> ctx.db.orders.findMany({
+        where: {
+          ...(afterId && { id: { gt: afterId } }),
+          ...(beforeId && { id: { lt: beforeId } }),
+        },
+        take: first ?? last,
+        orderBy: { id: <span class="str">'asc'</span> }
+      });
+
+      <span class="cm">// Build connection shape</span>
+      <span class="kw">return</span> {
+        edges: orders.map(order =&gt; ({
+          cursor: encodeCursor(order.id),
+          node: order
+        })),
+        pageInfo: {
+          hasNextPage: orders.length === first,
+          hasPreviousPage: !!after,
+          startCursor: orders[<span class="num">0</span>] ? encodeCursor(orders[<span class="num">0</span>].id) : null,
+          endCursor: orders.at(-<span class="num">1</span>) ? encodeCursor(orders.at(-<span class="num">1</span>).id) : null,
+        }
+      };
+    }
+  }
+};</code></pre>
+
+  <h3>N+1 Problem in GraphQL Pagination</h3>
+  <p>A critical issue: if each <code>edge.node</code> triggers a separate DB query, paginating 20 items causes 21 queries. Use DataLoader to batch these into a single query:</p>
+
+<pre><code><span class="kw">import</span> DataLoader <span class="kw">from</span> <span class="str">'dataloader'</span>;
+
+<span class="kw">const</span> orderLoader = <span class="kw">new</span> DataLoader(<span class="kw">async</span> (ids) =&gt; {
+  <span class="kw">const</span> orders = <span class="kw">await</span> db.orders.findMany({
+    where: { id: { in: ids } }
+  });
+  <span class="kw">return</span> ids.map(id =&gt; orders.find(o =&gt; o.id === id));
+});</code></pre>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s10">
+  <div class="section-label">Section 10</div>
+  <h2>WebSockets & <span class="accent">Real-Time Pagination</span></h2>
+
+  <p>Real-time pagination combines the concept of paginated history with live updates arriving via a persistent connection. This is one of the most complex pagination scenarios.</p>
+
+  <h3>The Core Challenge</h3>
+  <p>A paginated list of historical records + live incoming records creates two separate data streams that must be reconciled without duplicates or gaps.</p>
+
+  <h3>Architecture Pattern: Dual-Stream Model</h3>
+<pre><code><span class="cm">// Client connects and establishes two streams:</span>
+<span class="cm">// 1. Historical: REST/GraphQL cursor pagination for past data</span>
+<span class="cm">// 2. Live: WebSocket subscription for new data</span>
+
+<span class="kw">const</span> socket = <span class="kw">new</span> WebSocket(<span class="str">'wss://api.example.com/stream'</span>);
+<span class="kw">let</span> liveBuffer = [];
+<span class="kw">let</span> syncPoint = null;  <span class="cm">// Timestamp when WS connected</span>
+
+socket.onopen = () =&gt; {
+  syncPoint = Date.now();
+  <span class="cm">// Subscribe to new events BEFORE loading history</span>
+  <span class="cm">// to avoid the gap between last history item and first live item</span>
+  socket.send(JSON.stringify({ type: <span class="str">'subscribe'</span>, since: syncPoint }));
+  loadHistory();  <span class="cm">// fetch pages until we reach syncPoint</span>
+};
+
+socket.onmessage = (event) =&gt; {
+  <span class="kw">const</span> msg = JSON.parse(event.data);
+  <span class="kw">if</span> (historyLoadComplete) {
+    displayLive(msg);
+  } <span class="kw">else</span> {
+    liveBuffer.push(msg);  <span class="cm">// Buffer until history catches up</span>
+  }
+};
+
+<span class="kw">async function</span> <span class="fn">loadHistory</span>() {
+  <span class="kw">let</span> cursor = null;
+  <span class="kw">while</span> (true) {
+    <span class="kw">const</span> page = <span class="kw">await</span> fetchPage(cursor);
+    display(page.data);
+    <span class="kw">if</span> (!page.hasMore || page.data.at(-<span class="num">1</span>).timestamp &lt; syncPoint) <span class="kw">break</span>;
+    cursor = page.nextCursor;
+  }
+  <span class="cm">// Flush buffered live events, deduplicate</span>
+  <span class="kw">const</span> deduplicated = dedup([...displayedItems, ...liveBuffer]);
+  display(deduplicated);
+  historyLoadComplete = true;
+}</code></pre>
+
+  <h3>Server-Sent Events (SSE) for Simpler Real-Time</h3>
+  <p>SSE is a one-directional HTTP streaming protocol — simpler than WebSockets for append-only feeds. The client uses a <code>Last-Event-ID</code> header for reconnection, which acts as a cursor:</p>
+
+<pre><code><span class="cm">// Server (Node.js/Express)</span>
+app.get(<span class="str">'/api/feed/live'</span>, (req, res) =&gt; {
+  res.setHeader(<span class="str">'Content-Type'</span>, <span class="str">'text/event-stream'</span>);
+  res.setHeader(<span class="str">'Cache-Control'</span>, <span class="str">'no-cache'</span>);
+  res.setHeader(<span class="str">'Connection'</span>, <span class="str">'keep-alive'</span>);
+
+  <span class="kw">const</span> lastEventId = req.headers[<span class="str">'last-event-id'</span>];  <span class="cm">// Auto-cursor!</span>
+
+  <span class="cm">// Send missed events since last disconnect</span>
+  <span class="kw">const</span> missed = getMissedEvents(lastEventId);
+  missed.forEach(event =&gt; {
+    res.write(<span class="str">`id: </span>${event.id}<span class="str">\ndata: </span>${JSON.stringify(event)}<span class="str">\n\n`</span>);
+  });
+
+  <span class="cm">// Subscribe to new events</span>
+  <span class="kw">const</span> unsubscribe = eventBus.subscribe((event) =&gt; {
+    res.write(<span class="str">`id: </span>${event.id}<span class="str">\ndata: </span>${JSON.stringify(event)}<span class="str">\n\n`</span>);
+  });
+
+  req.on(<span class="str">'close'</span>, unsubscribe);
+});
+
+<span class="cm">// Client</span>
+<span class="kw">const</span> sse = <span class="kw">new</span> EventSource(<span class="str">'/api/feed/live'</span>);
+sse.onmessage = (e) =&gt; console.log(JSON.parse(e.data));
+<span class="cm">// Browser automatically sends Last-Event-ID on reconnect</span></code></pre>
+
+  <h3>WebSocket Pagination Protocol Design</h3>
+<pre><code><span class="cm">// Custom paginated WS protocol</span>
+<span class="cm">// Client → Server: request a page</span>
+{
+  <span class="str">"type"</span>: <span class="str">"paginate"</span>,
+  <span class="str">"request_id"</span>: <span class="str">"req_001"</span>,
+  <span class="str">"cursor"</span>: <span class="str">"eyJpZCI6NDg5Mn0="</span>,
+  <span class="str">"limit"</span>: <span class="num">20</span>
+}
+
+<span class="cm">// Server → Client: page response</span>
+{
+  <span class="str">"type"</span>: <span class="str">"page_result"</span>,
+  <span class="str">"request_id"</span>: <span class="str">"req_001"</span>,
+  <span class="str">"data"</span>: [...],
+  <span class="str">"next_cursor"</span>: <span class="str">"eyJpZCI6NDg3Mn0="</span>,
+  <span class="str">"has_more"</span>: true
+}
+
+<span class="cm">// Server → Client: live push (no request_id)</span>
+{
+  <span class="str">"type"</span>: <span class="str">"live_event"</span>,
+  <span class="str">"data"</span>: { <span class="str">"id"</span>: <span class="num">9999</span>, <span class="str">"event"</span>: <span class="str">"new_order"</span> },
+  <span class="str">"event_id"</span>: <span class="str">"9999"</span>
+}</code></pre>
+
+  <h3>Handling Reconnections</h3>
+  <p>On reconnect, the client must send the last event ID it received. The server replays any missed events from that point. This requires an event log or message queue (Kafka, Redis Streams) on the server that retains events for at least the expected reconnect window.</p>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s11">
+  <div class="section-label">Section 11</div>
+  <h2>High-Level / <span class="accent">Distributed Systems</span> Design</h2>
+
+  <h3>Pagination Across Microservices</h3>
+  <p>When data lives in multiple services, pagination becomes a distributed problem. A common scenario: a "feed" API that aggregates posts from a Posts service, Ads service, and Recommendations service, all with different underlying data stores.</p>
+
+  <h4>Approach 1: Fan-Out and Merge</h4>
+<pre><code><span class="cm">// API Gateway fans out to N services, merges, sorts, slices</span>
+<span class="kw">async function</span> <span class="fn">getFeedPage</span>(userId, cursor, limit) {
+  <span class="kw">const</span> [posts, ads, recs] = <span class="kw">await</span> Promise.all([
+    postsService.getPage(userId, cursor?.posts, limit * <span class="num">2</span>),
+    adsService.getPage(userId, cursor?.ads, <span class="num">5</span>),
+    recsService.getPage(userId, cursor?.recs, limit),
+  ]);
+
+  <span class="cm">// Merge and sort by timestamp</span>
+  <span class="kw">const</span> merged = [...posts, ...ads, ...recs]
+    .sort((a, b) =&gt; b.timestamp - a.timestamp)
+    .slice(<span class="num">0</span>, limit);
+
+  <span class="cm">// Next cursor encodes state for each service separately</span>
+  <span class="kw">return</span> {
+    data: merged,
+    next_cursor: encodeCursor({
+      posts: merged.filter(x =&gt; x.type === <span class="str">'post'</span>).at(-<span class="num">1</span>)?.cursor,
+      ads: merged.filter(x =&gt; x.type === <span class="str">'ad'</span>).at(-<span class="num">1</span>)?.cursor,
+      recs: merged.filter(x =&gt; x.type === <span class="str">'rec'</span>).at(-<span class="num">1</span>)?.cursor,
+    })
+  };
+}</code></pre>
+
+  <h4>Approach 2: Pre-Computed Feed (Write-Time Fanout)</h4>
+  <p>Instead of reading from multiple services at query time, pre-compute each user's feed into a dedicated feed table (write fanout). This is how Twitter (pre-2022) worked. Pagination then operates on a single, simple sorted list per user. Trade-off: expensive writes for users with millions of followers (celebrity problem).</p>
+
+  <h4>Approach 3: Materialized View / Search Index</h4>
+  <p>Aggregate data into Elasticsearch or a dedicated read model. The read model supports full-text search, complex filters, and efficient pagination. Updated asynchronously via CDC (Change Data Capture) from the source DBs using Debezium + Kafka.</p>
+
+  <h3>Distributed Cursor Challenges</h3>
+  <p><strong>Clock skew:</strong> In distributed systems, clocks across nodes are not perfectly synchronised. A timestamp-based cursor from one node may not accurately represent ordering on another node. Solutions: use logical clocks (Lamport timestamps, Hybrid Logical Clocks), rely on monotonic sequence IDs rather than wall-clock time, or route all writes for a user/partition through a single primary.</p>
+
+  <p><strong>Hot partitions:</strong> If many users paginate the same popular entity (e.g., a trending hashtag), the DB partition holding that entity becomes a hot spot. Solutions: read replicas, caching, or pre-pagination (pre-compute pages and cache them).</p>
+
+  <h3>API Gateway / BFF Layer</h3>
+  <p>The Backend-for-Frontend (BFF) pattern centralises pagination logic. Each client type (mobile, web, partner API) gets a BFF that implements the appropriate pagination strategy for that client's needs — mobile might use cursor pagination for infinite scroll, while the web app uses offset pagination for a traditional paginated table.</p>
+
+  <h3>Pagination in Event-Driven Systems</h3>
+  <p>Kafka consumer groups paginate implicitly via offsets. The consumer "cursor" is the Kafka partition offset. Key concepts:</p>
+  <ul style="padding-left: 20px; color: var(--text); margin-bottom: 14px;">
+    <li style="padding: 4px 0;"><strong>Committed offset:</strong> Last successfully processed message per partition</li>
+    <li style="padding: 4px 0;"><strong>Auto-commit vs manual commit:</strong> Manual commit gives at-least-once with idempotent processing</li>
+    <li style="padding: 4px 0;"><strong>Consumer lag:</strong> Difference between latest offset and committed offset — the "backlog"</li>
+    <li style="padding: 4px 0;"><strong>Replay:</strong> Reset offset to earliest for full reprocessing — equivalent to "go to page 1"</li>
+  </ul>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s12">
+  <div class="section-label">Section 12</div>
+  <h2>Caching <span class="accent">Strategies</span></h2>
+
+  <h3>What to Cache</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title green">Cache-Friendly</div>
+      <ul>
+        <li>Early pages (page 1 is fetched most)</li>
+        <li>Static or slow-changing data</li>
+        <li>Identical queries from many users</li>
+        <li>Total count (expensive, rarely changes)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title red">Cache-Hostile</div>
+      <ul>
+        <li>Personalised feeds (different per user)</li>
+        <li>High-write datasets</li>
+        <li>Deep pages (rarely accessed)</li>
+        <li>Real-time data</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Cache Key Design</h3>
+<pre><code><span class="cm">// For offset pagination</span>
+<span class="kw">const</span> cacheKey = <span class="str">`orders:list:page:</span>${page}<span class="str">:size:</span>${pageSize}<span class="str">:sort:</span>${sortField}<span class="str">:</span>${sortDir}<span class="str">`</span>;
+
+<span class="cm">// For cursor pagination (hash the cursor)</span>
+<span class="kw">const</span> cacheKey = <span class="str">`orders:cursor:</span>${sha256(cursor)}<span class="str">:limit:</span>${limit}<span class="str">`</span>;
+
+<span class="cm">// For filtered queries, include filter hash</span>
+<span class="kw">const</span> filterHash = sha256(JSON.stringify(sortedFilters));
+<span class="kw">const</span> cacheKey = <span class="str">`orders:filter:</span>${filterHash}<span class="str">:page:</span>${page}<span class="str">`</span>;</code></pre>
+
+  <h3>Cache Invalidation</h3>
+  <p>This is the hardest problem. Strategies:</p>
+  <ul style="padding-left: 20px; color: var(--text); margin-bottom: 14px;">
+    <li style="padding: 4px 0;"><strong>TTL-based expiry:</strong> Pages expire after N seconds. Simple but may serve stale data. Appropriate for data that can tolerate eventual consistency.</li>
+    <li style="padding: 4px 0;"><strong>Write-through:</strong> On every write, invalidate all page caches for affected entities. Simple but blows cache hit rates if writes are frequent.</li>
+    <li style="padding: 4px 0;"><strong>Tag-based invalidation:</strong> Tag cache entries (e.g., "orders:user:123"). Invalidate all entries with a tag on write. Redis supports this via sets of cache keys per tag.</li>
+    <li style="padding: 4px 0;"><strong>Version tokens:</strong> Append a version/etag to cache keys. Increment the version on write. Old cache entries become inaccessible. Stale entries expire naturally by TTL.</li>
+  </ul>
+
+  <h3>CDN Pagination Caching</h3>
+  <p>Public paginated APIs (e.g., public product listings) can be cached at the CDN layer. Use <code>Cache-Control: public, max-age=60, stale-while-revalidate=300</code> headers. Cursor-based APIs have poorer CDN cache hit rates because each cursor is unique. Page-number APIs cache better — page 1 is always the same URL.</p>
+
+  <h3>Redis Pipeline for Paginated Data</h3>
+<pre><code><span class="cm">// Fetch page data + total count in a single round-trip</span>
+<span class="kw">const</span> pipeline = redis.pipeline();
+pipeline.get(<span class="str">`page:</span>${cacheKey}<span class="str">`</span>);
+pipeline.get(<span class="str">`count:</span>${countCacheKey}<span class="str">`</span>);
+<span class="kw">const</span> [pageResult, countResult] = <span class="kw">await</span> pipeline.exec();
+
+<span class="kw">if</span> (pageResult && countResult) {
+  <span class="kw">return</span> { data: JSON.parse(pageResult), total: parseInt(countResult) };
+}
+<span class="cm">// Cache miss: fetch from DB, cache results</span></code></pre>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s13">
+  <div class="section-label">Section 13</div>
+  <h2>UI/UX <span class="accent">Patterns</span></h2>
+
+  <h3>Pattern Comparison</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Pattern</th><th>Best For</th><th>Pagination Strategy</th><th>Back Button Friendly</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Classic Numbered Pages</strong></td><td>Tables, admin UIs, search results</td><td>Offset</td><td class="good">✓ Yes</td></tr>
+      <tr><td><strong>Infinite Scroll</strong></td><td>Social feeds, content discovery</td><td>Cursor</td><td class="bad">✗ No (position lost)</td></tr>
+      <tr><td><strong>Load More Button</strong></td><td>News, articles, mobile lists</td><td>Cursor or offset</td><td class="ok">~ Partial</td></tr>
+      <tr><td><strong>Virtual Scrolling</strong></td><td>Very large lists (10k+ items)</td><td>Offset + window</td><td class="ok">~ Depends on impl</td></tr>
+      <tr><td><strong>Paginated Table with Sort</strong></td><td>Data grids, dashboards</td><td>Offset</td><td class="good">✓ Yes</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Virtual Scrolling (Windowed Rendering)</h3>
+  <p>Renders only the visible rows plus a small buffer. The DOM contains ~50 rows regardless of dataset size. A scroll event triggers offset recalculation and new pages are fetched as needed. Libraries: <code>react-window</code>, <code>react-virtual</code>, <code>ag-grid</code>.</p>
+
+<pre><code><span class="cm">// Simplified virtual scroll logic</span>
+<span class="kw">const</span> ITEM_HEIGHT = <span class="num">50</span>; <span class="cm">// px per row</span>
+<span class="kw">const</span> VISIBLE_COUNT = Math.ceil(containerHeight / ITEM_HEIGHT);
+<span class="kw">const</span> BUFFER = <span class="num">5</span>; <span class="cm">// extra rows above and below</span>
+
+<span class="kw">function</span> <span class="fn">getVisibleRange</span>(scrollTop) {
+  <span class="kw">const</span> startIndex = Math.max(<span class="num">0</span>, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER);
+  <span class="kw">const</span> endIndex = startIndex + VISIBLE_COUNT + BUFFER * <span class="num">2</span>;
+  <span class="kw">return</span> { startIndex, endIndex };
+}
+
+<span class="cm">// Determine which DB page to fetch based on visible range</span>
+<span class="kw">const</span> pageForIndex = (index) =&gt; Math.floor(index / PAGE_SIZE);
+<span class="kw">const</span> pagesToFetch = [...<span class="kw">new</span> Set([
+  pageForIndex(startIndex),
+  pageForIndex(endIndex)
+])];</code></pre>
+
+  <h3>Infinite Scroll Implementation</h3>
+<pre><code><span class="kw">import</span> { useInView } <span class="kw">from</span> <span class="str">'react-intersection-observer'</span>;
+
+<span class="kw">function</span> <span class="fn">InfiniteList</span>() {
+  <span class="kw">const</span> { ref, inView } = useInView({ threshold: <span class="num">0.1</span> });
+  <span class="kw">const</span> [items, setItems] = useState([]);
+  <span class="kw">const</span> [cursor, setCursor] = useState(null);
+  <span class="kw">const</span> [hasMore, setHasMore] = useState(true);
+
+  useEffect(() =&gt; {
+    <span class="kw">if</span> (inView && hasMore) {
+      loadNextPage();
+    }
+  }, [inView]);
+
+  <span class="kw">async function</span> <span class="fn">loadNextPage</span>() {
+    <span class="kw">const</span> data = <span class="kw">await</span> fetch(<span class="str">`/api/items?cursor=</span>${cursor || <span class="str">''</span>}<span class="str">&limit=20`</span>).then(r =&gt; r.json());
+    setItems(prev =&gt; [...prev, ...data.items]);
+    setCursor(data.next_cursor);
+    setHasMore(data.has_more);
+  }
+
+  <span class="kw">return</span> (
+    &lt;div&gt;
+      {items.map(item =&gt; &lt;Item key={item.id} {...item} /&gt;)}
+      {hasMore &amp;&amp; &lt;div ref={ref}&gt;Loading...&lt;/div&gt;}  {/* sentinel */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+  <h3>Preserving Scroll Position</h3>
+  <p>Infinite scroll breaks the browser back button — returning from a detail page resets scroll position. Solutions: store scroll position in <code>sessionStorage</code>, use React Router's <code>ScrollRestoration</code>, or use URL state to encode the current "page/cursor" so the list can be reconstructed on navigation back.</p>
+
+  <h3>UX Best Practices</h3>
+  <ul style="padding-left: 20px; color: var(--text); margin-bottom: 14px;">
+    <li style="padding: 4px 0;">Always show a loading indicator during page fetch (skeleton loaders, not spinners)</li>
+    <li style="padding: 4px 0;">Show an error state with retry on network failure</li>
+    <li style="padding: 4px 0;">Show "end of results" clearly for infinite scroll</li>
+    <li style="padding: 4px 0;">For large tables, show the current range: "Showing 41–60 of 1,847"</li>
+    <li style="padding: 4px 0;">Debounce rapid page changes / scroll events</li>
+    <li style="padding: 4px 0;">Prefetch the next page before user reaches the end</li>
+  </ul>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s14">
+  <div class="section-label">Section 14</div>
+  <h2>Search & <span class="accent">Elasticsearch</span></h2>
+
+  <h3>from + size (Offset Equivalent)</h3>
+<pre><code>GET /orders/_search
+{
+  "from": 40,
+  "size": 20,
+  "query": { "match_all": {} },
+  "sort": [{ "created_at": "desc" }]
+}</code></pre>
+
+  <div class="callout warn">
+    <div class="callout-title">Elasticsearch Deep Pagination Limit</div>
+    By default, Elasticsearch limits <code>from + size</code> to 10,000 (configurable via <code>index.max_result_window</code>). Beyond this, you must use <code>search_after</code>. This is because deep offset pagination requires sorting and discarding enormous result sets across all shards.
+  </div>
+
+  <h3>search_after (Cursor Equivalent)</h3>
+<pre><code>GET /orders/_search
+{
+  "size": 20,
+  "query": { "match_all": {} },
+  "sort": [
+    { "created_at": "desc" },
+    { "_id": "desc" }  <span class="cm">// tiebreaker — _id is always unique</span>
+  ],
+  "search_after": ["2024-01-15T10:30:00Z", "4892"]
+  <span class="cm">// Values from sort fields of last result</span>
+}</code></pre>
+
+  <h3>Point-in-Time (PIT) for Consistent Pagination</h3>
+  <p>Without PIT, index changes between requests can cause <code>search_after</code> to miss or duplicate documents. PIT creates a frozen view of the index:</p>
+
+<pre><code><span class="cm">// Step 1: Open a PIT</span>
+POST /orders/_pit?keep_alive=1m
+<span class="cm">// → { "id": "46ToAwMDaWdVAWN..." }</span>
+
+<span class="cm">// Step 2: Use PIT in search</span>
+GET /_search
+{
+  "size": 20,
+  "query": { "match_all": {} },
+  "pit": { "id": "46ToAwMDaWdVAWN...", "keep_alive": "1m" },
+  "sort": [{ "created_at": "desc" }, { "_id": "desc" }],
+  "search_after": ["2024-01-15T10:30:00Z", "4892"]
+}
+
+<span class="cm">// Step 3: Close PIT when done</span>
+DELETE /_pit
+{ "id": "46ToAwMDaWdVAWN..." }</code></pre>
+
+  <h3>Scroll API (Legacy — for full export)</h3>
+  <p>The Scroll API holds a search context open and iterates all results. It's designed for full dataset export, not interactive pagination. Deprecated for new use cases in favour of PIT + search_after. Still useful for ETL/migration.</p>
+
+<pre><code>POST /orders/_search?scroll=1m
+{ "size": 1000, "query": { "match_all": {} } }
+
+<span class="cm">// → { "_scroll_id": "DXF1ZXJ5...", "hits": [...] }</span>
+
+POST /_search/scroll
+{ "scroll": "1m", "scroll_id": "DXF1ZXJ5..." }
+<span class="cm">// Repeat until hits is empty</span></code></pre>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s15">
+  <div class="section-label">Section 15</div>
+  <h2>Master <span class="accent">Trade-Off Table</span></h2>
+
+  <div class="table-wrap"><table>
+    <thead>
+      <tr>
+        <th>Strategy</th>
+        <th>Perf (Large N)</th>
+        <th>Consistency</th>
+        <th>Arbitrary Nav</th>
+        <th>Total Count</th>
+        <th>Complexity</th>
+        <th>Best For</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Offset / Page</strong></td>
+        <td class="bad">Poor — O(n)</td>
+        <td class="bad">Poor</td>
+        <td class="good">✓ Yes</td>
+        <td class="good">✓ Yes</td>
+        <td class="good">Low</td>
+        <td>Admin UIs, small datasets</td>
+      </tr>
+      <tr>
+        <td><strong>Cursor / Keyset</strong></td>
+        <td class="good">Excellent — O(log N)</td>
+        <td class="good">Good</td>
+        <td class="bad">✗ No</td>
+        <td class="bad">✗ No</td>
+        <td class="ok">Medium</td>
+        <td>Feeds, APIs, mobile</td>
+      </tr>
+      <tr>
+        <td><strong>Time-Based</strong></td>
+        <td class="good">Good</td>
+        <td class="ok">Medium</td>
+        <td class="ok">~ Time range</td>
+        <td class="ok">~ Approx</td>
+        <td class="ok">Medium</td>
+        <td>Logs, time-series, events</td>
+      </tr>
+      <tr>
+        <td><strong>Seek Method</strong></td>
+        <td class="good">Excellent</td>
+        <td class="good">Good</td>
+        <td class="bad">✗ No</td>
+        <td class="bad">✗ No</td>
+        <td class="ok">Medium</td>
+        <td>Multi-column sorts</td>
+      </tr>
+      <tr>
+        <td><strong>Snapshot</strong></td>
+        <td class="ok">Medium</td>
+        <td class="good">Perfect</td>
+        <td class="good">✓ Yes</td>
+        <td class="good">✓ Yes</td>
+        <td class="bad">High</td>
+        <td>Reports, exports, audits</td>
+      </tr>
+      <tr>
+        <td><strong>ES search_after + PIT</strong></td>
+        <td class="good">Excellent</td>
+        <td class="good">Good</td>
+        <td class="bad">✗ No</td>
+        <td class="ok">~ Approx</td>
+        <td class="ok">Medium</td>
+        <td>Full-text search at scale</td>
+      </tr>
+      <tr>
+        <td><strong>Redis ZSET</strong></td>
+        <td class="good">Excellent</td>
+        <td class="ok">Eventual</td>
+        <td class="good">✓ Rank-based</td>
+        <td class="good">✓ O(1)</td>
+        <td class="ok">Medium</td>
+        <td>Leaderboards, real-time feeds</td>
+      </tr>
+      <tr>
+        <td><strong>Virtual Scroll</strong></td>
+        <td class="good">Excellent</td>
+        <td class="ok">Depends</td>
+        <td class="good">✓ Yes</td>
+        <td class="good">✓ Yes</td>
+        <td class="bad">High</td>
+        <td>Huge lists in browser</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3>Decision Framework</h3>
+  <div class="callout tip">
+    <div class="callout-title">How to Choose in an Exam (or Interview)</div>
+    <strong>1.</strong> Does the user need to jump to arbitrary pages? → Offset (accept perf trade-off) or hybrid.<br>
+    <strong>2.</strong> Is the dataset large (&gt;100k rows) and growing? → Cursor/keyset.<br>
+    <strong>3.</strong> Is the data time-series or event-based? → Time-based + Snowflake/ULID IDs.<br>
+    <strong>4.</strong> Is consistency critical (no duplicates ever)? → Snapshot transaction or PIT.<br>
+    <strong>5.</strong> Is it a real-time feed? → Cursor for history + SSE/WebSocket for live.<br>
+    <strong>6.</strong> Is it full-text search? → Elasticsearch search_after + PIT.<br>
+    <strong>7.</strong> Is it a leaderboard? → Redis ZSET.<br>
+    <strong>8.</strong> Is it a browser list with 10,000+ items? → Virtual scrolling.
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<div class="section" id="s16">
+  <div class="section-label">Section 16</div>
+  <h2>Common Exam Questions <span class="accent">& Model Answers</span></h2>
+
+  <h3>Q: Why is OFFSET pagination slow for large datasets?</h3>
+  <p><strong>A:</strong> The database must read and discard all rows before the offset. For <code>OFFSET 1000000 LIMIT 20</code>, the DB scans 1,000,020 rows and throws away the first million. This is O(n) in the offset value. Cursor pagination replaces the OFFSET with a <code>WHERE</code> clause that the DB can satisfy with an index seek in O(log N), then scans exactly LIMIT rows.</p>
+
+  <h3>Q: What's the "phantom read" problem in pagination?</h3>
+  <p><strong>A:</strong> When data is mutated between page fetches. With offset pagination, if a new record is inserted into an earlier position, every existing record shifts down by one position. A client viewing page 2 will see the last record from page 1 again — a duplicate. If a record is deleted, a record will be silently skipped. Cursor pagination avoids this by anchoring on record identity (key value), not position.</p>
+
+  <h3>Q: Design a scalable pagination system for a social media feed with 100M users.</h3>
+  <p><strong>A:</strong> Use a write-time fan-out architecture. When a user posts, write to the feed tables of all their followers asynchronously (via a message queue). Each user's feed is a sorted set in Redis (<code>ZADD feed:user_id timestamp post_id</code>). Paginate using <code>ZREVRANGEBYSCORE</code> with time-based cursors. For celebrities (many followers), use read-time fan-in instead (pull from their timeline at read time and merge). Cold storage (older items) uses cursor pagination against a Cassandra or PostgreSQL table. Live updates use SSE or WebSocket.</p>
+
+  <h3>Q: How would you implement pagination for a search results API?</h3>
+  <p><strong>A:</strong> Use Elasticsearch. For interactive search (first 10,000 results), use <code>from + size</code>. For deep pagination or full export, open a Point-in-Time, use <code>search_after</code> with the sort values from the last hit as the cursor, and close the PIT when done. Always include a unique tiebreaker (<code>_id</code>) in the sort clause. Approximate total count from Elasticsearch's <code>hits.total.value</code>.</p>
+
+  <h3>Q: How does GraphQL Relay cursor pagination work? Why use edges/nodes?</h3>
+  <p><strong>A:</strong> The Relay spec wraps results in a Connection type. Each item is an Edge containing a cursor (opaque string for that specific position) and a node (the actual data). The Connection also has a pageInfo object with hasNextPage, hasPreviousPage, startCursor, endCursor. The edge/node indirection allows per-item cursors (useful for live update subscriptions) and connection-level metadata (totalCount). Cursors are typically Base64-encoded position identifiers, not tied to pagination mechanism — the backend can use keyset, offset, or anything internally.</p>
+
+  <h3>Q: How do you paginate across microservices?</h3>
+  <p><strong>A:</strong> Two approaches. (1) Fan-out and merge: the aggregating service requests LIMIT * N items from each upstream, merges and re-sorts, then returns LIMIT items with a composite cursor that encodes per-service cursor state. (2) Pre-aggregated read model: a separate service or materialised view aggregates all data (via CDC/Kafka) into a single sorted store (Redis, Elasticsearch, or a dedicated DB). Pagination then runs against the aggregated store. Option 2 has better read performance but higher write cost and latency.</p>
+
+  <h3>Q: How do you handle real-time updates in a paginated list?</h3>
+  <p><strong>A:</strong> Subscribe to updates via WebSocket or SSE <em>before</em> loading history. Record the connection timestamp as the sync point. Load historical pages (via cursor pagination) until reaching the sync point. Buffer live events received during history load. Once history is complete, flush the buffer, deduplicating any overlap. Going forward, append live events to the top of the list without re-fetching pages. For pull-to-refresh, use a <code>since=timestamp</code> query to get only new items.</p>
+
+  <h3>Q: What is a covering index and why does it matter for pagination?</h3>
+  <p><strong>A:</strong> A covering index includes all columns needed by a query (SELECT, WHERE, ORDER BY) so the DB can satisfy the query entirely from the index without accessing the table heap. For pagination, this eliminates the "late row lookup" problem — the index-only scan reads exactly LIMIT entries sequentially after the seek, with no random heap I/O. This can be 10x+ faster on large tables. In PostgreSQL, use the <code>INCLUDE</code> clause to add non-key columns to an index. In MySQL, the index must explicitly contain all needed columns.</p>
+
+  <h3>Q: What are the consistency trade-offs of different pagination strategies?</h3>
+  <p><strong>A:</strong> <strong>Offset pagination</strong> has the worst consistency — any insert or delete shifts positions and causes duplicate or missing items across pages. <strong>Cursor/keyset pagination</strong> is immune to inserts between pages (cursor anchors on a specific key value) but vulnerable to deletes — if the cursor row is deleted, behaviour depends on implementation. <strong>Snapshot/REPEATABLE READ</strong> offers perfect consistency — the entire dataset is frozen at the time of the first query — but holds a database snapshot open, preventing cleanup, and is expensive for long-running paginations. <strong>Elasticsearch PIT</strong> offers index-level snapshots without DB transaction locks.</p>
+
+  <div class="divider"></div>
+
+  <div class="callout key">
+    <div class="callout-title">Final Revision Checklist</div>
+    ✓ Offset vs Cursor: core mechanism, performance, consistency<br>
+    ✓ Deep pagination problem: why OFFSET is O(n), deferred join optimisation<br>
+    ✓ Cursor encoding: Base64, encryption, server-side storage<br>
+    ✓ Non-unique sort key problem: always add tiebreaker<br>
+    ✓ Index design: covering indexes, partial indexes, index-only scans<br>
+    ✓ REST: parameter conventions, response envelope shapes, Link headers<br>
+    ✓ GraphQL: Relay spec, edges/nodes, first/after/last/before, N+1 + DataLoader<br>
+    ✓ WebSockets: dual-stream model, sync point, buffering, SSE Last-Event-ID<br>
+    ✓ Distributed: fan-out/merge, composite cursors, write-time vs read-time fanout<br>
+    ✓ Elasticsearch: from+size limit, search_after, PIT, Scroll API<br>
+    ✓ Redis ZSET: sorted sets for leaderboards and feeds<br>
+    ✓ Cassandra: partition-bound cursor pagination, clustering columns<br>
+    ✓ Caching: TTL, tag-based invalidation, version tokens, CDN<br>
+    ✓ UI patterns: infinite scroll, virtual scroll, numbered pages, load more<br>
+    ✓ Decision framework: when to use which strategy
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  Pagination Complete Reference — Systems Design &amp; Engineering · June 2026
+</div>
+
+</body>
+</html>
